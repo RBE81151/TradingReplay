@@ -24,18 +24,28 @@
 
     <script>
         let data = [
-            { x: new Date('2024-02-01'), o: 400, h: 420, l: 390, c: 410 },
-            { x: new Date('2024-02-02'), o: 410, h: 430, l: 405, c: 420 },
-            { x: new Date('2024-02-03'), o: 420, h: 440, l: 415, c: 430 },
-            { x: new Date('2024-02-04'), o: 430, h: 450, l: 425, c: 440 }
+            { t: '2024-02-01', o: 400, h: 420, l: 390, c: 410 },
+            { t: '2024-02-02', o: 410, h: 430, l: 405, c: 420 },
+            { t: '2024-02-03', o: 420, h: 440, l: 415, c: 430 },
+            { t: '2024-02-04', o: 430, h: 450, l: 425, c: 440 }
         ];
 
         let ctx = document.getElementById('chart').getContext('2d');
         let chart = new Chart(ctx, {
             type: 'candlestick',
-            data: { datasets: [{ label: 'Stock Prices', data: [] }] },
+            data: {
+                datasets: [{
+                    label: 'Stock Prices',
+                    data: [],
+                    borderColor: 'black',
+                    backgroundColor: 'green'
+                }]
+            },
             options: {
-                scales: { x: { type: 'timeseries', time: { unit: 'day' } } }
+                scales: {
+                    x: { type: 'time', time: { unit: 'day' } },
+                    y: { beginAtZero: false }
+                }
             }
         });
 
@@ -45,7 +55,13 @@
             if (!interval) {
                 interval = setInterval(() => {
                     if (index < data.length) {
-                        chart.data.datasets[0].data.push(data[index]);
+                        chart.data.datasets[0].data.push({
+                            x: new Date(data[index].t),
+                            o: data[index].o,
+                            h: data[index].h,
+                            l: data[index].l,
+                            c: data[index].c
+                        });
                         chart.update();
                         index++;
                     } else {
