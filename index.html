@@ -1,1 +1,71 @@
-<html><head><title>Trading Replay</title></head><body><h1>Trading Replay Website</h1></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Bar Replay</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.3.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        canvas { max-width: 800px; margin: auto; }
+        button { margin: 10px; padding: 10px; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <h1>Trading Bar Replay</h1>
+    <canvas id="chart"></canvas>
+    <br>
+    <button onclick="playReplay()">Play</button>
+    <button onclick="pauseReplay()">Pause</button>
+    <button onclick="resetReplay()">Reset</button>
+
+    <script>
+        let data = [
+            { t: '2024-02-01', o: 400, h: 420, l: 390, c: 410 },
+            { t: '2024-02-02', o: 410, h: 430, l: 405, c: 420 },
+            { t: '2024-02-03', o: 420, h: 440, l: 415, c: 430 },
+            { t: '2024-02-04', o: 430, h: 450, l: 425, c: 440 }
+        ];
+
+        let ctx = document.getElementById('chart').getContext('2d');
+        let chart = new Chart(ctx, {
+            type: 'candlestick',
+            data: { datasets: [{ label: 'Stock Prices', data: [] }] },
+            options: {
+                scales: { x: { type: 'timeseries', time: { unit: 'day' } } }
+            }
+        });
+
+        let index = 0;
+        let interval;
+        function playReplay() {
+            if (!interval) {
+                interval = setInterval(() => {
+                    if (index < data.length) {
+                        chart.data.datasets[0].data.push(data[index]);
+                        chart.update();
+                        index++;
+                    } else {
+                        clearInterval(interval);
+                        interval = null;
+                    }
+                }, 1000);
+            }
+        }
+
+        function pauseReplay() {
+            clearInterval(interval);
+            interval = null;
+        }
+
+        function resetReplay() {
+            index = 0;
+            chart.data.datasets[0].data = [];
+            chart.update();
+        }
+    </script>
+</body>
+</html>
